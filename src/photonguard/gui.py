@@ -12,36 +12,21 @@ from PySide6.QtWidgets import (
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 
-from photonguard.csv_input import load_csv
-from photonguard.detector import detector_response, linear_profile, sample_source
 from photonguard.diagnostics import analyze
-from photonguard.measurement import Measurement
-
-
-def simulate(*, rate_start, rate_end, efficiency_start, efficiency_end,
-             noise_std, ceiling, bin_duration_s, n_bins, seed):
-    """Declare the initial mean and zero baseline noise, independently of faults."""
-    rng = np.random.default_rng(seed)
-    incident = sample_source(linear_profile(rate_start, rate_end, n_bins), bin_duration_s, rng)
-    output = detector_response(incident, rng,
-        efficiency=linear_profile(efficiency_start, efficiency_end, n_bins),
-        electronic_noise_std=noise_std, saturation_level=ceiling)
-    return Measurement(output.readout, bin_duration_s, "count_equivalent",
-        expected_mean=rate_start * efficiency_start * bin_duration_s,
-        baseline_noise_std=0, saturation_level=ceiling)
+from photonguard.sources import CsvSource, MeasurementSource, SimulationSource
 
 
 class CaptureWorker(QThread):
     succeeded = Signal(object, object)
     failed = Signal(str)
 
-    def __init__(self, capture, parent):
+    def __init__(self, source: MeasurementSource, parent):
         super().__init__(parent)
-        self.capture = capture
+        self.source = source
 
     def run(self):
         try:
-            measurement = self.capture()
+            measurement = self.source.read()
             self.succeeded.emit(measurement, analyze(measurement))
         except Exception as exc:
             self.failed.emit(str(exc))
@@ -201,21 +186,21 @@ class MainWindow(QMainWindow):
                     efficiency_start=self.efficiency_start.value(), efficiency_end=self.efficiency_end.value(),
                     noise_std=self.noise.value(), ceiling=self.ceiling.value() if self.clip.isChecked() else None,
                     bin_duration_s=self.duration.value(), n_bins=self.bins.value(), seed=self.seed.value())
-                capture = lambda: simulate(**parameters)
+                source = SimulationSource(**parameters)
                 self.capture_description = f"Simulated capture; seed {parameters['seed']}. Pseudorandom model output."
             else:
                 metadata = {key: float(field.text()) for key, field in self.csv_fields.items() if field.text().strip()}
                 if self.csv_unit.currentIndex():
                     metadata["unit"] = self.csv_unit.currentText()
                 path = self.csv_path.text()
-                capture = lambda: load_csv(path, metadata=metadata)
+                source = CsvSource(path, metadata)
                 self.capture_description = f"CSV capture: {path}. Metadata is supplied, not independently verified."
         except ValueError as exc:
             self.show_error(str(exc))
             return
         self.controls.setEnabled(False)
         self.status.setText("Reading measurements and analyzing…")
-        self.worker = CaptureWorker(capture, self)
+        self.worker = CaptureWorker(source, self)
         self.worker.succeeded.connect(self.show_result)
         self.worker.failed.connect(self.show_error)
         self.worker.finished.connect(self.capture_finished)
