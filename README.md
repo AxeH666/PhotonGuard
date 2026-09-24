@@ -9,8 +9,9 @@ clipping, and controlled source/efficiency profiles in `detector.py`.
 See [the physical model and limitations](docs/PHYSICS.md). PR3 adds source-independent
 measurements and [interpretable diagnostics](docs/DIAGNOSTICS.md), including
 ambiguous and insufficient-evidence outcomes. PR4 adds strict [recorded CSV
-input](docs/CSV.md) through that same diagnostic engine. GUI and hardware
-adapters remain later components.
+input](docs/CSV.md) through that same diagnostic engine. PR5 adds the
+[Windows desktop interface](docs/DESKTOP.md) with simulation/CSV controls,
+interactive plots, and evidence-first results. Live hardware drivers are out of scope.
 See [the V1 scope](PhotonGuard_Project_Scope_v1.1.docx) and [working guidance](AGENTS.md).
 
 ## Physical model
@@ -71,8 +72,10 @@ py -3.12 -m venv .venv
 
 Select another installed supported Python version if 3.12 is unavailable.
 The core depends only on NumPy. Matplotlib is the optional plotting dependency;
-pytest is the test dependency. The full test suite requires both extras.
-There is no SciPy or Qt dependency.
+pytest is the test dependency. The non-GUI tests require both extras.
+The desktop and GUI tests additionally require the `gui` extra (PySide6-Essentials
+and Matplotlib). Install `.[gui,test]` and run `python -m photonguard` to launch it.
+There is no SciPy dependency. Without Qt, GUI tests are explicitly skipped.
 
 The suite also supports direct invocation: `.\.venv\Scripts\pytest.exe -q`.
 Pytest adds the repository root to its import path through `pyproject.toml`, so
@@ -148,7 +151,7 @@ Poisson sampler rather than introducing a new random-number algorithm.
 Repeatability is scoped to the same seed, generator, calls, and NumPy environment.
 Exact streams are not promised across arbitrary dependency versions or machines.
 
-### Verified local result
+### PR1 verified local result (historical)
 
 On Windows, September 24, 2026, the full suite passed: **50 tests in 6.46 s**.
 The environment used Python 3.12.10, NumPy 2.5.2, Matplotlib 3.11.1, and
