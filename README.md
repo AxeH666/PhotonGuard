@@ -1,11 +1,13 @@
 # PhotonGuard
 
-PR 1 implements a physical baseline: constant-rate photon illumination,
+The PR1 physical baseline provides constant-rate photon illumination,
 Poisson counts in equal time bins, and an ideal detector. It includes a seeded
 example that exports two static PNG plots and focused tests.
 
-Only this baseline is implemented. Detector imperfections, faults, diagnostics,
-CSV ingestion, GUI, hardware integration, and later roadmap items are deferred.
+PR2 adds binomial detection efficiency, additive electronic read noise, upper
+clipping, and controlled source/efficiency profiles in `detector.py`.
+See [the physical model and limitations](docs/PHYSICS.md). Diagnostics, CSV
+ingestion, GUI, and hardware adapters remain later components.
 See [the V1 scope](PhotonGuard_Project_Scope_v1.1.docx) and [working guidance](AGENTS.md).
 
 ## Physical model

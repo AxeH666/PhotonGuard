@@ -119,6 +119,15 @@ Do not claim laboratory-grade calibration, certification, or production-grade QR
 - Do not merge or start the next component until the independent review is clean or explicitly approved by the founder.
 - These review gates supplement the locked one-component / one-branch / one-focused-PR workflow above; they do not replace it.
 
+### Founder-approved exception for the autonomous PR2-PR7 completion run
+
+- This exception applies only to the autonomous PR2-PR7 completion run for V1.1.
+- Self-review remains mandatory for every PR and before every push. Fix meaningful issues and re-run relevant tests after fixes.
+- Independent review is deferred until the complete V1.1 implementation is finished, then performed separately across the completed implementation; it is not waived.
+- During this run, the deferred independent review does not block merging each component PR or proceeding to the next component after completing the locked Git workflow.
+- Preserve one component = one branch = one focused PR: finish and validate the component, commit and push, open and merge its PR, switch to `main`, and pull merged remote `main` before creating the next component branch.
+- Outside this scoped exception, the permanent two-stage review rule continues to apply.
+
 ## Reference implementation sequence
 
 Follow the v1.1 sequence unless the founder explicitly changes priorities:
