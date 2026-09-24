@@ -1,0 +1,1 @@
+"""PhotonGuard photon-counting simulation."""
