@@ -76,3 +76,39 @@ def test_sample_limit_rejects_entire_capture(tmp_path, monkeypatch):
     path = write_capture(tmp_path, "# unit=counts\n# bin_duration_s=1\nvalue\n1\n2\n3")
     with pytest.raises(ValueError, match="sample limit"):
         load_csv(path)
+
+
+@pytest.mark.parametrize("scale", [1, 1e-9, 1e9])
+@pytest.mark.parametrize("level,occupancy", [
+    pytest.param(None, 0, id="below-ceiling"),
+    pytest.param(1, .5, id="at-ceiling"),
+    pytest.param(1.1, None, id="above-ceiling"),
+    pytest.param(1 - 5e-10, .5, id="just-below-within-tolerance"),
+    pytest.param(1 + 5e-10, .5, id="just-above-within-tolerance"),
+    pytest.param(1 - 2e-9, 0, id="below-outside-tolerance"),
+    pytest.param(1 + 2e-9, None, id="above-outside-tolerance"),
+])
+def test_csv_clipping_is_invariant_under_unit_scaling(tmp_path, scale, level, occupancy):
+    rng = np.random.default_rng(42)
+    values = rng.uniform(.1, .9, 10_000)
+    if level is not None:
+        values[:5000] = level
+        rng.shuffle(values)
+    values *= scale
+    path = write_capture(tmp_path,
+        f"# unit=arbitrary\n# bin_duration_s=0.001\n# saturation_level={scale:.17g}\nvalue\n"
+        + "\n".join(f"{value:.17g}" for value in values))
+    report = analyze(load_csv(path))
+    direct = analyze(Measurement(values, .001, "arbitrary", saturation_level=scale))
+    assert report == direct
+    assert report.metrics["clipping_fraction"] == occupancy
+    if occupancy is None:
+        assert report.status == "insufficient_evidence"
+        assert not report.findings
+        assert "Samples exceed" in " ".join(report.limitations)
+    elif occupancy == 0:
+        assert report.status == "insufficient_evidence"
+        assert not report.findings
+    else:
+        assert report.status == "likely_condition"
+        assert {f.condition for f in report.findings} == {"saturation_clipping"}

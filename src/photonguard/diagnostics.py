@@ -64,11 +64,13 @@ def analyze(measurement: Measurement) -> Report:
     clipped = False
     if ceiling is None:
         limits.append("No known readout ceiling supplied; clipping cannot be reliably screened.")
-    elif np.any(x > ceiling + 1e-9 * max(1, ceiling)):
-        limits.append("Samples exceed the supplied ceiling; check metadata or units before interpreting clipping.")
-        return Report("insufficient_evidence", metrics, (), tuple(limits))
     else:
-        fraction = float(np.mean(np.isclose(x, ceiling, rtol=0, atol=1e-9 * max(1, ceiling))))
+        # Use the ceiling as reference, without a unit-dependent absolute floor.
+        at_ceiling = np.isclose(x, ceiling, rtol=1e-9, atol=0)
+        if np.any((x > ceiling) & ~at_ceiling):
+            limits.append("Samples exceed the supplied ceiling; check metadata or units before interpreting clipping.")
+            return Report("insufficient_evidence", metrics, (), tuple(limits))
+        fraction = float(np.mean(at_ceiling))
         metrics["clipping_fraction"] = fraction
         # Account for ordinary probability mass at an integer photon count.
         natural_mass = 0.0
