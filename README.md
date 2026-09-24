@@ -6,8 +6,10 @@ example that exports two static PNG plots and focused tests.
 
 PR2 adds binomial detection efficiency, additive electronic read noise, upper
 clipping, and controlled source/efficiency profiles in `detector.py`.
-See [the physical model and limitations](docs/PHYSICS.md). Diagnostics, CSV
-ingestion, GUI, and hardware adapters remain later components.
+See [the physical model and limitations](docs/PHYSICS.md). PR3 adds source-independent
+measurements and [interpretable diagnostics](docs/DIAGNOSTICS.md), including
+ambiguous and insufficient-evidence outcomes. CSV ingestion, GUI, and hardware
+adapters remain later components.
 See [the V1 scope](PhotonGuard_Project_Scope_v1.1.docx) and [working guidance](AGENTS.md).
 
 ## Physical model
