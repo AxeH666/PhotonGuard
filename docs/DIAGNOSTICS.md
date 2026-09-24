@@ -21,14 +21,23 @@ source-intensity change with efficiency/gain alternatives; a falling mean lists
 both source drift and efficiency degradation. No unique localization is possible
 from this channel because `E[K] = eta*r*dt`.
 
-For a supplied upper limit `L`, samples within `1e-9 * max(1,L)` are counted as
-at the ceiling. A clipping hypothesis requires over 5% occupancy and, for
+For a supplied positive upper limit `L`, samples satisfying
+`abs(value - L) <= 1e-9 * abs(L)` are counted as at the ceiling
+(`numpy.isclose(value, L, rtol=1e-9, atol=0)`). The same comparison permits tiny
+numerical excursions above `L`; values above `L` outside this band invalidate
+the metadata and cause abstention. There is no fixed absolute tolerance that
+could dominate small electrical values. This preserves the relative comparison
+when arbitrary-unit values and their ceiling are rescaled together, subject to
+floating-point representability. If the tolerance underflows to zero, only exact
+equality qualifies. This numerical band is not an instrument calibration or
+resolution estimate; count/count-equivalent units retain their defined scale.
+
+A clipping hypothesis requires over 5% occupancy and, for
 integer count ceilings with zero/unknown baseline read noise, more than ordinary
 Poisson mass `P(N=L)` plus six binomial standard errors. Supplied baseline mean
 is used when present, otherwise the sample mean is only a screening estimate.
 This check is for hard clipping; soft compression may be missed. Quantization
-and repeated/censored records can imitate clipping. Samples above the declared
-limit invalidate that metadata and cause abstention. Unknown ceiling means no
+and repeated/censored records can imitate clipping. Unknown ceiling means no
 clipping check, not a claim that clipping is absent.
 
 In stationary, unclipped, calibrated count/count-equivalent data, expected

@@ -65,7 +65,7 @@ Pre-merge PR7 release candidate checks on September 24, 2026:
 | Baseline plots and scenarios | Both baseline PNGs generated/inspected; five CSVs and reports reproduced and round-trip tests passed |
 | PyInstaller | One-directory executable built successfully; QtAgg selected; no build error or warning |
 
-The final local candidate is `dist/v1.1.0/PhotonGuard/PhotonGuard.exe`; its SHA-256
+The pre-merge PR7 candidate is `dist/v1.1.0/PhotonGuard/PhotonGuard.exe`; its SHA-256
 is `870d63c6ada9a5d9d400ce6832ef777b28bed7c8d0b6527df29b29c31c705bbe`.
 Keep the complete directory with the executable. PyInstaller's missing-module
 report contains optional/cross-platform imports; the exercised runtime paths
@@ -73,6 +73,34 @@ passed. This is not proof that every optional third-party code path works.
 
 The executable is generated locally, not tracked in Git or uploaded as a GitHub
 release asset. Source, build recipe, screenshots and dependency notices are tracked.
+
+## Independent-review clipping correction candidate
+
+The full independent review found that the clipping comparison's fixed absolute
+tolerance floor falsely classified small arbitrary-unit values. The correction
+uses the ceiling-relative rule documented in `DIAGNOSTICS.md`, with zero absolute
+tolerance and one shared comparison for occupancy and above-ceiling abstention.
+No physical model, occupancy cutoff or other diagnostic rule changed.
+
+Validation on the same Windows/Python environment, September 24, 2026:
+
+- `python -m pytest -q`: **199 passed in 11.93 s**, no skips.
+- `pytest -q`: **199 passed in 12.42 s**, no skips; `pip check` passed.
+- Added 21 CSV/direct-engine regressions across scales `1`, `1e-9`, `1e9`:
+  below, exactly at, above, and inside/outside the relative comparison band.
+  Seven small-scale cases failed before the correction; all pass afterward.
+- Native source and frozen Windows smoke: all six existing cases passed each.
+  Six additional native CSV GUI checks covered below/at/above at two scales.
+- All nine embedded PhotonGuard modules and the launcher match compilation of
+  candidate source (ignoring filenames). The 21 CSV regressions also passed
+  against extracted diagnostic bytecode in the development Python runtime.
+
+The rebuilt, unsigned correction candidate is
+`dist/v1.1.0-clipping-fix/PhotonGuard/PhotonGuard.exe`, SHA-256
+`0d9f0c3d90eb43e64fa8232cf10c2b74acbb162d36b76b661084bc311a96e1ea`.
+The portable ZIP is `dist/PhotonGuard-v1.1.0-clipping-fix-windows-x64.zip`.
+Prior artifacts are preserved. This fix still requires independent review before
+merge; these checks do not constitute that review.
 
 ## Remaining boundaries
 
@@ -86,5 +114,5 @@ release asset. Source, build recipe, screenshots and dependency notices are trac
   device compatibility, physical entropy and laboratory performance are unverified.
 - No clean-machine/other-Windows-version matrix, installer, signing, or production
   deployment has been validated. See `RELEASE.md` for the native-pytest COM issue.
-- Per-PR self-reviews are complete; the founder-deferred independent review of
-  the complete implementation is still a separate gate.
+- The complete implementation's independent review identified the clipping issue
+  above. Independent review of its correction remains a separate gate.
