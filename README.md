@@ -12,6 +12,8 @@ ambiguous and insufficient-evidence outcomes. PR4 adds strict [recorded CSV
 input](docs/CSV.md) through that same diagnostic engine. PR5 adds the
 [Windows desktop interface](docs/DESKTOP.md) with simulation/CSV controls,
 interactive plots, and evidence-first results. Live hardware drivers are out of scope.
+PR6 formalizes the [finite-capture adapter contract](docs/ADAPTERS.md), with
+simulation/CSV implementations and an explicitly unimplemented hardware stub.
 See [the V1 scope](PhotonGuard_Project_Scope_v1.1.docx) and [working guidance](AGENTS.md).
 
 ## Physical model
