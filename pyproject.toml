@@ -4,9 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "photonguard"
-version = "0.1.0"
-description = "A photon-counting physical baseline for PhotonGuard"
+version = "1.1.0"
+description = "Photon-count detector simulation and interpretable measurement screening"
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24,<3"]
 
@@ -14,6 +15,10 @@ dependencies = ["numpy>=1.24,<3"]
 plots = ["matplotlib>=3.7,<4"]
 test = ["pytest>=8,<10"]
 gui = ["PySide6-Essentials>=6.8,<7", "matplotlib>=3.7,<4"]
+build = ["pyinstaller>=6.16,<7"]
+
+[project.urls]
+Repository = "https://github.com/AxeH666/PhotonGuard"
 
 [project.gui-scripts]
 photonguard = "photonguard.gui:main"

@@ -1,5 +1,21 @@
 # Physical model and limitations
 
+## Physical situation and ideal baseline
+
+The rate is that of steady coherent light incident on the active detector area,
+not total source emission before unspecified optical losses. Each equal-duration,
+non-overlapping bin counts events, not a single binary click. Poisson probability
+is `P(N=k)=exp(-mu)*mu**k/k!`, with `mu=r*dt`. An ideal detector returns `D_i=N_i`
+without a second draw; `E[D]=Var(D)=mu` numerically and `std(D)=sqrt(mu)`.
+Counts are dimensionless event numbers; plots label them as counts and variance
+as counts squared. Zero illumination gives exactly zero ideal counts.
+
+This assumes independent bins and coherent-state illumination for which Poisson
+photodetection applies. It is not a statement about every laser. The baseline
+does not model fields, arrival times, propagation, wavelength, power conversion,
+thermal bunching or antibunching. Specifying incident rate avoids inventing
+optical collection efficiency or a wavelength-to-power calibration.
+
 ## Incident photons and detection
 
 The PR1 baseline remains unchanged. For each bin of duration `dt` seconds,
