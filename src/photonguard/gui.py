@@ -228,10 +228,10 @@ class MainWindow(QMainWindow):
                           finding.evidence, "Other explanations: " + finding.alternatives, ""])
         if not report.findings:
             lines.append("No condition identified by the applicable screening rules.")
+        lines.extend(["", "LIMITATIONS", *report.limitations])
         lines.extend(["", "METRICS (definitions: docs/DIAGNOSTICS.md)"])
         for name, value in report.metrics.items():
             lines.append(f"{name}: {value:.6g}" if value is not None else f"{name}: unavailable")
-        lines.extend(["", "LIMITATIONS", *report.limitations])
         self.evidence.setPlainText("\n".join(lines))
         try:
             self.render_plots(measurement)
