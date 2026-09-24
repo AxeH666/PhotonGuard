@@ -69,6 +69,10 @@ The core depends only on NumPy. Matplotlib is the optional plotting dependency;
 pytest is the test dependency. The full test suite requires both extras.
 There is no SciPy or Qt dependency.
 
+The suite also supports direct invocation: `.\.venv\Scripts\pytest.exe -q`.
+Pytest adds the repository root to its import path through `pyproject.toml`, so
+both invocation styles can import the example plotting helpers.
+
 The example uses seed `20260924` and the non-interactive Agg backend. It writes:
 
 - `outputs/counts_vs_time.png`: the first 200 bins (0.2 seconds), plotted at bin

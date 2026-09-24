@@ -108,6 +108,17 @@ Do not claim laboratory-grade calibration, certification, or production-grade QR
 - Never start PR2 work on the PR1 branch.
 - Do not bypass this gate unless the founder explicitly changes the workflow.
 
+## Permanent two-stage review rule
+
+- Before every push, perform a self-review of the current component.
+- Inspect the actual diff for correctness, scope compliance, unnecessary complexity / overengineering, test adequacy, documentation accuracy, accidental later-roadmap work, and files that should not be included.
+- Fix meaningful issues found during self-review before pushing.
+- Re-run the relevant tests after any fixes.
+- After the branch is pushed and the PR is open, perform a separate independent PR review before merge.
+- Treat self-review and independent review as two distinct gates.
+- Do not merge or start the next component until the independent review is clean or explicitly approved by the founder.
+- These review gates supplement the locked one-component / one-branch / one-focused-PR workflow above; they do not replace it.
+
 ## Reference implementation sequence
 
 Follow the v1.1 sequence unless the founder explicitly changes priorities:
